@@ -1,8 +1,12 @@
 import { StatusBar } from 'expo-status-bar';
 import ModalDropdown from 'react-native-modal-dropdown';
 import React, {  useState } from 'react';
-import 
+import firebase from "firebase";
+
+import
 { 
+  Button,
+  Alert,
     StyleSheet, 
     Text, 
     TextInput, 
@@ -14,15 +18,15 @@ import
 
 
 
-
  
  
 
 export default function Regiform() {
-  
+
 const [isError,setError] = useState({
   fName:false,
   lName:false,
+  Gender:false,
   Contact:false,
   Email:false,
   Add1:false,
@@ -32,19 +36,22 @@ const [isError,setError] = useState({
   District:false,
   Pincode:false,
   Password:false,
-  Confirm:true,
+  State:false,
+  Confirm:false,
 
 })  
 const [user,setUser] = useState({
   fName:'',
   lName:'',
   Contact:'',
+  Gender:'',
   Email:'',
   Add1:'',
   Add2:'',
   Landmark:'',
   City:'',
   District:'',
+  State:'',
   Pincode:'',
   Password:'',
   Confirm:''
@@ -57,9 +64,102 @@ const [temp,setTemp] = useState({
   Confirm:0
 
   })
+  
+ function reset() {
+    setUser({
+      fName:'',
+      lName:'',
+      Contact:'',
+      Gender:'',
+      Email:'',
+      Add1:'',
+      Add2:'',
+      Landmark:'',
+      City:'',
+      District:'',
+      State:'',
+      Pincode:'',
+      Password:'',
+      Confirm:''
+    })
+    setError({
+      fName:false,
+      lName:false,
+      Gender:false,
+      Contact:false,
+      Email:false,
+      Add1:false,
+      Add2:false,
+      Landmark:false,
+      City:false,
+      District:false,
+      Pincode:false,
+      Password:false,
+      State:false,
+      Confirm:false
+    })
+  }
+  function getEmails() {
+    const dbRef = firebase.database().ref();
+    const dbtable=dbRef.child("cust_details");
+    dbtable.get().then((snapshot) => {
+    if (snapshot.exists()) {
+      const array2=snapshot.val();
+      const userId=Object.keys(array2);
+      // console.log(userId);
+      for(var i=0;i<3;i++){
+      dbtable.child(userId[i]).child("Email").get().then((snapshot)=>{
+        Email.push(snapshot.val());
+      }).catch((error)=>{
+        console.log(error)
+      })
+      }
+      
+     
+    } else {
+      console.log("No data available");
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  return Email;
+  }
 
 
- 
+  function getContact() {
+    const dbRef = firebase.database().ref();
+    const dbtable=dbRef.child("cust_details");
+    dbtable.get().then((snapshot) => {
+    if (snapshot.exists()) {
+      const array2=snapshot.val();
+      const userId=Object.keys(array2);
+      // console.log(userId);
+      for(var i=0;i<3;i++){
+      dbtable.child(userId[i]).child("Contact").get().then((snapshot)=>{
+        Contact.push(snapshot.val());
+      }).catch((error)=>{
+        console.log(error)
+      })
+      }
+      
+     
+    } else {
+      console.log("No data available");
+    }
+  }).catch((error) => {
+    console.error(error);
+  });
+
+  return Contact;
+  }
+
+  
+  
+ const [Email,setEmail]=useState([getEmails()])
+ const [Contact,setContact]=useState([getContact()])
+
+
   return (
     <View style={styles.FormWrapper}>
         <Text style={styles.normalText} >Hello, User</Text>
@@ -125,7 +225,9 @@ const [temp,setTemp] = useState({
               setError({ 
               ...isError,
               Contact:(!pattern.test(user.Contact))
+              
               }); 
+             
                }
             }}
           />
@@ -151,7 +253,7 @@ const [temp,setTemp] = useState({
            setError({ 
             ...isError,
            Email:(!pattern.test(user.Email))
-           }); 
+           });  
             }
           }}
         />
@@ -169,8 +271,9 @@ const [temp,setTemp] = useState({
            onKeyPress={(e)=>{
             const pattern = /^[a-zA-Z0-9]{2,40}[,/]?( [a-zA-Z]{1,40})+$/;
             setError({ 
+            ...isError,
             Add1:(!pattern.test(user.Add1))
-           }); 
+           });  
           }}
         />
 
@@ -187,6 +290,7 @@ const [temp,setTemp] = useState({
            onKeyPress={(e)=>{
             const pattern = /^[a-zA-Z0-9]{2,40}[,/\s]{0,2}?([a-zA-Z]{1,40})+$/ ;
             setError({ 
+            ...isError,
             Add2:(!pattern.test(user.Add2))
            }); 
           }}
@@ -204,6 +308,7 @@ const [temp,setTemp] = useState({
            onKeyPress={(e)=>{
             const pattern = /^[a-zA-Z]{2,40}([a-zA-Z\s]{0,40})+$/;
             setError({ 
+            ...isError,
             Landmark:(!pattern.test(user.Landmark))
            }); 
           }}
@@ -222,6 +327,7 @@ const [temp,setTemp] = useState({
            onKeyPress={(e)=>{
             const pattern = /^[a-zA-Z]{2,40}([a-zA-Z ]{0,40})+$/;
             setError({ 
+            ...isError,
             City:(!pattern.test(user.City))
            }); 
           }}
@@ -237,6 +343,7 @@ const [temp,setTemp] = useState({
            onKeyPress={(e)=>{
             const pattern = /^[a-zA-Z]{2,40}([a-zA-Z ]{0,40})+$/;
             setError({ 
+            ...isError,
             District:(!pattern.test(user.District))
            }); 
           }}
@@ -248,13 +355,41 @@ const [temp,setTemp] = useState({
           {(isError.District) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>District is not valid</Text>}
         </View>
         
+
+        <View style={{flexDirection:"row",}}>
         <ModalDropdown options={["Andhra Pradesh","Arunachal Pradesh ","Assam","Bihar","Chhattisgarh","Goa",
-        "Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Madhya Pradesh",
-        "Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu",
-        "Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh",
-        "Dadra and Nagar Haveli","Daman and Diu","Lakshadweep","National Capital Territory of Delhi","Puducherry"]} 
-         defaultValue={"State"} style={{width:"45%"}} onLoad textStyle={{fontSize:25,}} 
-         dropdownTextStyle={{backgroundColor:"#ba60eb",fontSize:20,color:"#ebe6ed",}}  />
+  "Gujarat","Haryana","Himachal Pradesh","Jammu and Kashmir","Jharkhand","Karnataka","Kerala","Madhya Pradesh",
+  "Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu",
+  "Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh",
+  "Dadra and Nagar Haveli","Daman and Diu","Lakshadweep","National Capital Territory of Delhi","Puducherry"]} 
+         defaultValue={"State"} style={{width:"45%"}} textStyle={{fontSize:25,}} 
+         dropdownTextStyle={{backgroundColor:"#ba60eb",fontSize:20,color:"#ebe6ed",}}   renderButtonText={(value)=>{
+           setUser({
+             ...user,
+             State:value,
+           })
+           if(user.State==''){
+           setError({
+            ...isError,
+            State:true,
+           })
+          }
+          
+         }}/>
+         <ModalDropdown options={['Male','Female','Other']} defaultValue={"Gender"} style={{width:"45%"}} textStyle={{fontSize:25,}}  
+         dropdownTextStyle={{backgroundColor:"#ba60eb",fontSize:20,color:"#ebe6ed",}}   renderButtonText={(value)=>{
+           setUser({
+             ...user,
+             Gender:value,
+           })
+           if(user.Gender==''){
+           setError({
+            ...isError,
+            Gender:true,
+           })
+          }
+         }} />
+         </View>
         
         <TextInput style={[styles.CUS,{paddingTop:10}]} placeholder="Pincode"
            onChangeText={(text)=>{ 
@@ -314,21 +449,62 @@ const [temp,setTemp] = useState({
         
         />
         
-        <View>{(!isError.Confirm) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Please enter Same password</Text>}</View>
+        <View>{(isError.Confirm)? <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Please enter Same password</Text>:null}</View>
 
-        <View style={{flexDirection:"row",}}>
-          <TouchableOpacity style={styles.SignBtn}>
-            <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"}} >Cancel</Text>
+        <View style={{flexDirection:"row",}} >
+          <TouchableOpacity style={styles.SignBtn}  onPress={(e)=> console.log(Contact)
+          } >
+            <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"}}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.SignBtn}
+          <TouchableOpacity style={styles.SignBtn} 
             onPress={(e)=>{
               if(user.Confirm!=user.Password){
                 setError({
                   ...isError,
-                  Confirm:false})
+                  Confirm:true})
                 
                 }
+
+
+                
+                if(isError.fName==false && isError.lName==false && isError.Gender==true && isError.Contact==false && isError.Email==false && isError.Add1==false && isError.Add2==false &&  isError.City==false && isError.District==false && isError.Pincode==false && isError.Password==false && isError.State==true && isError.Confirm==false)
+                {
+
+                      if(Email.includes(user.Email)||Contact.includes(user.Contact))
+                          {
+                            Alert.alert("Error","Your email id or contact is already registrated. Please login",[
+                              { text: "OK", onPress: () => {console.log("OK Pressed"); }}
+                            ])
+                            
+                          }
+                      else
+                      {
+                            if( user.fName=='' || user.lName=='' || user.Contact=='' || user.Gender=='' || user.Email=='' || user.Add1=='' || user.Add2=='' ||   user.City=='' || user.District=='' || user.State=='' || user.Pincode=='' || user.Password=='')
+                          {
+                            Alert.alert("Error","Please fill the details properly",[
+                              { text: "OK", onPress: () =>{ console.log("OK Pressed");console.log(isError)}}
+                            ])
+                          }
+                     
+                      else{
+                        firebase.database().ref('cust_details/').push(user);
+                        reset();
+                        Alert.alert("Sign Up Sucessful","Please login in to your account",[
+                          { text: "OK", onPress: () => {console.log("OK Pressed"); }}
+                        ])
+                        
+
+                    }
+                  }
+                }      
+                else{
+                  Alert.alert("Error","Please fill the details properly",[
+                    { text: "OK", onPress: () =>{ console.log("OK Pressed");console.log(isError)}}
+                  ])
+                  // e.target.reset()
+                }
             }}
+
           >
             <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"}}>Sign UP</Text>
           </TouchableOpacity>
@@ -338,11 +514,10 @@ const [temp,setTemp] = useState({
         </View>
         
         <Text>{"\n"} {"\n"} </Text>
-         
         </View>
     );
-  
-}
+          
+          }
 
 const styles = StyleSheet.create({
   FormWrapper: {
