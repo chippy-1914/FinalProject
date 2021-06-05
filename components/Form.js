@@ -1,5 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import ModalDropdown from 'react-native-modal-dropdown';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import React, {  useState } from 'react';
 import firebase from "firebase";
 
@@ -37,9 +38,10 @@ const [isError,setError] = useState({
   Pincode:false,
   Password:false,
   State:false,
-  Confirm:false,
 
-})  
+})
+
+
 const [user,setUser] = useState({
   fName:'',
   lName:'',
@@ -54,51 +56,16 @@ const [user,setUser] = useState({
   State:'',
   Pincode:'',
   Password:'',
-  Confirm:''
 })
 const [temp,setTemp] = useState({
   Contact:0,
   Email:0,
   Pincode:0,
   Password:0,
-  Confirm:0
 
   })
   
- function reset() {
-    setUser({
-      fName:'',
-      lName:'',
-      Contact:'',
-      Gender:'',
-      Email:'',
-      Add1:'',
-      Add2:'',
-      Landmark:'',
-      City:'',
-      District:'',
-      State:'',
-      Pincode:'',
-      Password:'',
-      Confirm:''
-    })
-    setError({
-      fName:false,
-      lName:false,
-      Gender:false,
-      Contact:false,
-      Email:false,
-      Add1:false,
-      Add2:false,
-      Landmark:false,
-      City:false,
-      District:false,
-      Pincode:false,
-      Password:false,
-      State:false,
-      Confirm:false
-    })
-  }
+
   function getEmails() {
     const dbRef = firebase.database().ref();
     const dbtable=dbRef.child("cust_details");
@@ -106,8 +73,9 @@ const [temp,setTemp] = useState({
     if (snapshot.exists()) {
       const array2=snapshot.val();
       const userId=Object.keys(array2);
+      const countObj=Object.keys(array2).length;
       // console.log(userId);
-      for(var i=0;i<3;i++){
+      for(var i=0;i<countObj;i++){
       dbtable.child(userId[i]).child("Email").get().then((snapshot)=>{
         Email.push(snapshot.val());
       }).catch((error)=>{
@@ -117,6 +85,7 @@ const [temp,setTemp] = useState({
       
      
     } else {
+
       console.log("No data available");
     }
   }).catch((error) => {
@@ -134,8 +103,9 @@ const [temp,setTemp] = useState({
     if (snapshot.exists()) {
       const array2=snapshot.val();
       const userId=Object.keys(array2);
+      const countObj=Object.keys(array2).length;
       // console.log(userId);
-      for(var i=0;i<3;i++){
+      for(var i=0;i<countObj;i++){
       dbtable.child(userId[i]).child("Contact").get().then((snapshot)=>{
         Contact.push(snapshot.val());
       }).catch((error)=>{
@@ -158,7 +128,7 @@ const [temp,setTemp] = useState({
   
  const [Email,setEmail]=useState([getEmails()])
  const [Contact,setContact]=useState([getContact()])
-
+ const [hidePass, setHidePass] = useState(true);
 
   return (
     <View style={styles.FormWrapper}>
@@ -216,19 +186,19 @@ const [temp,setTemp] = useState({
              }}
     
              onBlur={(e)=>{
-               if(temp.Contact==0){
-               setTemp({Contact:temp.Contact+1})
-            }
-            else{
+            //    if(temp.Contact==0){
+            //    setTemp({Contact:temp.Contact+1})
+            // }
+            // else{
               const pattern = /^[6-9]\d{9}$/ 
               user.Contact.trim();
               setError({ 
               ...isError,
               Contact:(!pattern.test(user.Contact))
               
-              }); 
+              // }); 
              
-               }
+               });
             }}
           />
         </View>
@@ -269,7 +239,7 @@ const [temp,setTemp] = useState({
            }}
   
            onKeyPress={(e)=>{
-            const pattern = /^[a-zA-Z0-9]{2,40}[,/]?( [a-zA-Z]{1,40})+$/;
+            const pattern = /^[a-zA-Z0-9]{2,40}[,/]?( [a-zA-Z0-9]{1,40})+$/;
             setError({ 
             ...isError,
             Add1:(!pattern.test(user.Add1))
@@ -288,7 +258,7 @@ const [temp,setTemp] = useState({
            }}
   
            onKeyPress={(e)=>{
-            const pattern = /^[a-zA-Z0-9]{2,40}[,/\s]{0,2}?([a-zA-Z]{1,40})+$/ ;
+            const pattern = /^[a-zA-Z0-9]{2,40}[,/\s]{0,2}?([a-zA-Z0-9]{1,40})+$/ ;
             setError({ 
             ...isError,
             Add2:(!pattern.test(user.Add2))
@@ -416,61 +386,64 @@ const [temp,setTemp] = useState({
 
         <View>{(isError.Pincode) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Pincode is invalid</Text>}</View>
         
-        {/* Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character: */}
-          
-        <TextInput style={styles.CUS} secureTextEntry={true} placeholder="Password" 
-         onChangeText={(text)=>{ 
-          setUser({
-            ...user,
-            Password:text});
-
-         }}
-        onBlur={(e)=>{
-          if(temp.Password==0){
-          setTemp({Password:temp.Password+1})
-       }
-       else{
-         const pattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        <View style={{flexDirection:"row",}}>
+  
          
-         setError({ 
-          ...isError,
-         Password:(!pattern.test(user.Password))
-         }); 
-          }
-        }}
-        />
- 
+          
+          <TextInput style={[styles.CUS,{width:"80%"}]} secureTextEntry={hidePass ? true : false} placeholder="Password" 
+              onChangeText={(text)=>{ 
+                setUser({
+                  ...user,
+                  Password:text});
+
+              }}
+              onBlur={(e)=>{
+                if(temp.Password==0){
+                  setTemp({Password:temp.Password+1})
+                }
+                else{
+                  const pattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+                  
+                  setError({ 
+                    ...isError,
+                  Password:(!pattern.test(user.Password))
+                  }); 
+                  }
+                }
+              }
+          />
+          <Icon
+                style={[styles.CUS,{width:"13%",}]}
+                name={hidePass ? 'eye-slash' : 'eye'}
+                // size={15}
+                color="grey"
+                onPress={() => setHidePass(!hidePass)}
+              />  
+        </View>
+
+
+        
+        {/* Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character: */}
+        
+
         <View>{(isError.Password) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}> Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character: *</Text>}</View>
 
-        <TextInput style={styles.CUS} secureTextEntry={true} placeholder="Confirm Password"  onChangeText={(text)=>{ setUser({...user,Confirm:text});}}
         
-        
-        
-        
-        />
-        
-        <View>{(isError.Confirm)? <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Please enter Same password</Text>:null}</View>
-
+       
         <View style={{flexDirection:"row",}} >
-          <TouchableOpacity style={styles.SignBtn}  onPress={(e)=> console.log(Contact)
-          } >
+          <TouchableOpacity style={styles.SignBtn}   >
             <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"}}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.SignBtn} 
             onPress={(e)=>{
-              if(user.Confirm!=user.Password){
-                setError({
-                  ...isError,
-                  Confirm:true})
-                
-                }
+              
 
 
                 
-                if(isError.fName==false && isError.lName==false && isError.Gender==true && isError.Contact==false && isError.Email==false && isError.Add1==false && isError.Add2==false &&  isError.City==false && isError.District==false && isError.Pincode==false && isError.Password==false && isError.State==true && isError.Confirm==false)
+                if(isError.fName==false && isError.lName==false && isError.Gender==true && isError.Contact==false && isError.Email==false && isError.Add1==false && isError.Add2==false &&  isError.City==false && isError.District==false && isError.Pincode==false && isError.Password==false && isError.State==true )
                 {
 
-                      if(Email.includes(user.Email)||Contact.includes(user.Contact))
+                      if(Email.includes(user.Email) ||Contact.includes(user.Contact))
                           {
                             Alert.alert("Error","Your email id or contact is already registrated. Please login",[
                               { text: "OK", onPress: () => {console.log("OK Pressed"); }}
@@ -488,7 +461,7 @@ const [temp,setTemp] = useState({
                      
                       else{
                         firebase.database().ref('cust_details/').push(user);
-                        reset();
+                   
                         Alert.alert("Sign Up Sucessful","Please login in to your account",[
                           { text: "OK", onPress: () => {console.log("OK Pressed"); }}
                         ])
@@ -501,7 +474,7 @@ const [temp,setTemp] = useState({
                   Alert.alert("Error","Please fill the details properly",[
                     { text: "OK", onPress: () =>{ console.log("OK Pressed");console.log(isError)}}
                   ])
-                  // e.target.reset()
+                
                 }
             }}
 
@@ -529,11 +502,11 @@ const styles = StyleSheet.create({
   },
   CUS:{
     fontSize:25,
-    width:"90%",
+    width:"93%",
     marginBottom:20,
     borderBottomWidth:2,
     borderColor:"#ba60eb",
-    width:"93%",
+   
     
   },
   SignBtn: {
