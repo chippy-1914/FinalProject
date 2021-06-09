@@ -1,10 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {  useState} from 'react';
 import { StyleSheet, Text, View,ScrollView } from 'react-native';
-
 import Regiform from './components/Form';
 import firebase from "firebase";
 
+//Database configuration
 var firebaseConfig = {
   apiKey: "AIzaSyCIHDCsSmctBT_eagJnFqttRGFd8xI6_VU",
   authDomain: "shoeshop-75160.firebaseapp.com",
@@ -25,12 +25,13 @@ export default function App() {
     <View style={styles.container}>
       <StatusBar hidden={false}></StatusBar>
       <ScrollView>
-      <View style={styles.HeaderMain}>
+      <View style={styles.HeaderMain}> 
+      {/* This is section for the shop logo and header section */}
         <Text style={styles.HeaderMainText}>SHOE SHOP</Text>
         <Text style={{paddingTop:10,fontSize:20,fontFamily:"monospace",color:"#cfadde",textAlign:'center'}}>Here there would be tag line</Text>
       </View>
       <View style={styles.Rform}>
-        
+        {/* This is section for the registration form */}
           <Regiform/>
         
       </View>
