@@ -6,14 +6,16 @@ import firebase from "firebase";
 
 import
 { 
-
+  ScrollView,
+  Linking,
   Alert,
     StyleSheet, 
     Text, 
     TextInput, 
     TouchableOpacity, 
     View,
-
+    
+    
   
 } from 'react-native';
 
@@ -22,7 +24,7 @@ import
  
  
 
-export default function Regiform() {
+export default function Regiform({navigation}) {
 // This state variable is used to check whether any input doesnt match with the actual condition
 const [isError,setError] = useState({
   fName:false,
@@ -58,15 +60,14 @@ const [user,setUser] = useState({
   Password:'',
 })
 
-
 // These are temporary state variable used in the program where we want excecution from the second click
-const [temp,setTemp] = useState({
-  Contact:0,
-  Email:0,
-  Pincode:0,
-  Password:0,
+// const [temp,setTemp] = useState({
+//   Contact:0,
+//   Email:0,
+//   Pincode:0,
+//   Password:0,
 
-  })
+//   })
   
 // This function is used to retrieve email array from database so that we can check if the user has already registered or not
   function getEmails() {
@@ -76,8 +77,8 @@ const [temp,setTemp] = useState({
     if (snapshot.exists()) {
       const array2=snapshot.val();
       // here we store the user id  
-      const userId=Object.keys(array2);     
-      const countObj=Object.keys(array2).length;   
+      const userId=Object.keys(array2);
+      const countObj=Object.keys(array2).length;
       // console.log(userId);
       for(var i=0;i<countObj;i++){
       dbtable.child(userId[i]).child("Email").get().then((snapshot)=>{
@@ -85,10 +86,9 @@ const [temp,setTemp] = useState({
         Email.push(snapshot.val());
       }).catch((error)=>{
         console.log(error);
-      })
+      });
       }
-    } 
-    else {
+    } else {
 
       console.log("No data available");
     }
@@ -116,8 +116,8 @@ const [temp,setTemp] = useState({
          // here we push the contact nos from db to the Email array
         Contact.push(snapshot.val());
       }).catch((error)=>{
-        console.log(error)
-      })
+        console.log(error);
+      });
       }
       
      
@@ -137,12 +137,27 @@ const [temp,setTemp] = useState({
  const [Contact,setContact]=useState([getContact()])
  const [hidePass, setHidePass] = useState(true);
 
+  
+
   return (
+    <View style={styles.container}>
+      <ScrollView >
+      <View style={styles.HeaderMain}> 
+      {/* This is section for the shop logo and header section */}
+        <Text style={styles.HeaderMainText}>SIGN UP!</Text>
+        <Text style={{paddingTop:10,fontSize:20,fontFamily:"monospace",color:"white",textAlign:'center'}}>We are happy to welcome you!</Text>
+      </View>
+           
+            
+    
     <View style={styles.FormWrapper}>
-        <Text style={styles.normalText} >Hello, User</Text>
-        <Text style={styles.normalText}>Register Yourself</Text>
+      {/* <ImageBackground source={bgImage} style={style.backgroundcontainer}>
+
+      </ImageBackground> */}
+        {/* <Text style={styles.normalText} >SIGN UP</Text> */}
+        {/* <Text style={styles.normalText}>Register Yourself</Text> */}
  {/* the below section is for first name input box. Here we do not allow numbers or any other special character. We can see the error while typing itself */}
-        <TextInput style={styles.CUS} placeholder="First Name" 
+        <TextInput style={styles.CUS} placeholderTextColor="#202020" placeholder="First Name" 
        
          onChangeText={(text)=>{ 
           setUser({
@@ -160,11 +175,11 @@ const [temp,setTemp] = useState({
         }}
       />
         
-        <View>{(isError.fName) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>First Name should not have number or any special characters</Text>}</View>   
+        <View>{(isError.fName) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>First Name should not have number or any special characters</Text>}</View>   
         
 {/* the below section is for last name input box. Here we do not allow numbers or any other special character. We can see the error while typing itself */}
   
-        <TextInput style={styles.CUS} placeholder="Last name"
+        <TextInput style={styles.CUS} placeholderTextColor="#202020" placeholder="Last name"
           onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -180,13 +195,13 @@ const [temp,setTemp] = useState({
           }}
         />
         
-        <View>{(isError.lName) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Last Name should not have number or any special characters</Text>}</View>
+        <View>{(isError.lName) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Last Name should not have number or any special characters</Text>}</View>
        
 {/* the below section is for contact input box. Here we do not allow alphabets or any other special character. We can see the error when we go to the next text box or when the text is out of focus */}
   
         <View style={{flexDirection:"row",}}>
-          <Text style={[styles.CUS,{borderBottomWidth:0,width:"13%"}]}>+91</Text>
-          <TextInput style={[styles.CUS,{width:"80%"}]} placeholder="Contact" 
+          <Text style={[styles.CUS,{borderWidth:2,width:"13%",paddingTop:5,borderRightWidth:0,borderWidth:0,fontSize:15,marginTop:12}]}>+91</Text>
+          <TextInput style={[styles.CUS,{width:"80%"}]} placeholderTextColor="#202020" placeholder="Contact" 
             onChangeText={(text)=>{ 
               setUser({
                 ...user,
@@ -212,12 +227,12 @@ const [temp,setTemp] = useState({
           />
         </View>
 
-        <View>{(isError.Contact) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Contact number is not valid</Text>}</View>
+        <View>{(isError.Contact) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Contact number is not valid</Text>}</View>
        
         
 {/* the below section is for email input box. Here we do not allow any other special character other than '.@'. We can see the error when we go to the next text box or when the text is out of focus */}
           
-        <TextInput style={styles.CUS} placeholder="Email"
+        <TextInput style={styles.CUS} placeholderTextColor="#202020" placeholder="Email"
           onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -225,34 +240,35 @@ const [temp,setTemp] = useState({
            }}
 
           onBlur={(e)=>{
-            if(temp.Email==0){
-            setTemp({Email:temp.Email+1})
-         }
-         else{
+        //     if(temp.Email==0){
+        //     setTemp({Email:temp.Email+1});
+        //  }
+        //  else{
+        	user.Email.trim()
            const pattern = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w\w+)+$/;
            setError({ 
             ...isError,
            Email:(!pattern.test(user.Email))
            });  
-            }
+            // }
           }}
         />
 
         
-        <View>{(isError.Email) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Email Id is not valid</Text>}</View>
+        <View>{(isError.Email) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Email Id is not valid</Text>}</View>
 
 {/* the below section is for room no building input box. Here we do not allow any special character. You have to give 2 words or more for room no and building name We can see the error while typing itself */}
   
 
-        <TextInput style={styles.CUS} placeholder="Room No/Building Name"
+        <TextInput style={styles.CUS} placeholderTextColor="#202020" placeholder="Room No/Building Name"
            onChangeText={(text)=>{ 
             setUser({
               ...user,
-              Add1:text});    
+              Add1:text});
            }}
   
            onKeyPress={(e)=>{
-            const pattern = /^[a-zA-Z0-9]{1,40}[,/]?( [a-zA-Z0-9]{1,40})+$/;
+            const pattern = /^[a-zA-Z0-9]{2,40}[,/]?( [a-zA-Z0-9]{1,40})+$/;
             setError({ 
             ...isError,
             Add1:(!pattern.test(user.Add1))
@@ -260,11 +276,11 @@ const [temp,setTemp] = useState({
           }}
         />
 
-        <View>{(isError.Add1) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Address should not have special characters other than ,/</Text>}</View>
+        <View>{(isError.Add1) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Address should not have special characters other than ,/</Text>}</View>
 
 {/* the below section is for area or lane input box. Here we do not allow numbers any other special character. We can see the error while typing itself */}
   
-        <TextInput style={styles.CUS} placeholder="Area/ Lane" 
+        <TextInput style={styles.CUS} placeholderTextColor="#202020" placeholder="Area/Lane" 
           onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -280,12 +296,12 @@ const [temp,setTemp] = useState({
           }}
         />
 
-        <View>{(isError.Add2) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Address should not have special characters other than ,/</Text>}</View>
+        <View>{(isError.Add2) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Address should not have special characters other than ,/</Text>}</View>
 
 
 {/* the below section is for landmark input box. Here we do not allow numbers or any other special character. We can see the error while typing itself */}
   
-        <TextInput style={styles.CUS} placeholder="Landmark" 
+        <TextInput style={styles.CUS} placeholderTextColor="#202020" placeholder="Landmark" 
           onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -301,12 +317,12 @@ const [temp,setTemp] = useState({
           }}
         />
 
-        <View>{(isError.Landmark) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Landmark should not have numbers, or any special characters</Text>}</View>
+        <View>{(isError.Landmark) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Landmark should not have numbers, or any special characters</Text>}</View>
 
 {/* the below section is for Cityinput box. Here we do not allow numbers or any other special character. We can see the error while typing itself */}
   
         <View style={{flexDirection:"row",}}>
-        <TextInput style={[styles.CUS,{width:"45%"}]} placeholder="City" 
+        <TextInput style={[styles.CUS,{width:"45%"}]} placeholderTextColor="#202020" placeholder="City" 
           onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -324,7 +340,7 @@ const [temp,setTemp] = useState({
 
 {/* the below section is for District input box. Here we do not allow any other special character. We can see the error while typing itself */}
           
-        <TextInput style={[styles.CUS,{marginLeft:10,width:"45%"}]} placeholder="District" 
+        <TextInput style={[styles.CUS,{marginLeft:10,width:"45%"}]} placeholderTextColor="#202020" placeholder="District" 
           onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -342,8 +358,8 @@ const [temp,setTemp] = useState({
         </View>
 
         <View>
-          {(isError.City) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>City is not valid</Text>}
-          {(isError.District) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>District is not valid</Text>}
+          {(isError.City) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>City is not valid</Text>}
+          {(isError.District) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>District is not valid</Text>}
         </View>
         
 
@@ -355,37 +371,43 @@ const [temp,setTemp] = useState({
   "Maharashtra","Manipur","Meghalaya","Mizoram","Nagaland","Odisha","Punjab","Rajasthan","Sikkim","Tamil Nadu",
   "Telangana","Tripura","Uttar Pradesh","Uttarakhand","West Bengal","Andaman and Nicobar Islands","Chandigarh",
   "Dadra and Nagar Haveli","Daman and Diu","Lakshadweep","National Capital Territory of Delhi","Puducherry"]} 
-         defaultValue={"State"} style={{width:"45%"}} textStyle={{fontSize:25,}} 
-         dropdownTextStyle={{backgroundColor:"#ba60eb",fontSize:20,color:"#ebe6ed",}}   renderButtonText={(value)=>{
+         defaultValue={"State"} style={{width:"60%", height:"70%"}} textStyle={{fontSize:15,textAlign:'center',color:'#202020'}} borderWidth={1.5}
+         borderColor={'#008080'} marginBottom={20} marginRight={10} paddingTop={8} paddingLeft={35} 
+         borderBottomLeftRadius={8} borderBottomRightRadius={8}
+         borderTopLeftRadius={8} borderTopRightRadius={8} marginTop={10}
+         dropdownTextStyle={{backgroundColor:"#008080",fontSize:20,color:"white",}}   renderButtonText={(value)=>{
            setUser({
              ...user,
              State:value,
            })
-          //  if(value==''){
+           if(user.State==''){
            setError({
             ...isError,
             State:true,
            })
-          // }
+          }
           
          }}/>
-         <ModalDropdown options={['Male','Female','Other']} defaultValue={"Gender"} style={{width:"45%"}} textStyle={{fontSize:25,}}  
-         dropdownTextStyle={{backgroundColor:"#ba60eb",fontSize:20,color:"#ebe6ed",}}   renderButtonText={(value)=>{
+         <ModalDropdown options={['Male','Female','Other']} defaultValue={"Gender"} style={{width:"30%",height:"70%", color: 'grey'}}
+         textStyle={{fontSize:15,textAlign:'center',color:'#202020'}} borderWidth={1.5} borderColor={'#008080'} marginBottom={20} 
+         paddingTop={8} paddingRight={10} paddingLeft={20} borderBottomLeftRadius={8} borderBottomRightRadius={8}
+         borderTopLeftRadius={8} borderTopRightRadius={8} marginTop={10}
+         dropdownTextStyle={{backgroundColor:"#008080",fontSize:15,color:"white", paddingLeft:50}}   renderButtonText={(value)=>{
            setUser({
              ...user,
              Gender:value,
            })
-          //  if(value==''){
+           if(user.Gender==''){
            setError({
             ...isError,
             Gender:true,
            })
-          // }
+          }
          }} />
          </View>
- {/* the below section is for first name input box. Here we do not allow numbers or any other special character. We can see the error when we go to the next text box or when the text is out of focus */}
+        {/* the below section is for first name input box. Here we do not allow numbers or any other special character. We can see the error when we go to the next text box or when the text is out of focus */}
   
-        <TextInput style={[styles.CUS,{paddingTop:10}]} placeholder="Pincode"
+        <TextInput style={[styles.CUS,{marginTop:15}]} placeholderTextColor="#202020" placeholder="Pincode"
            onChangeText={(text)=>{ 
             setUser({
               ...user,
@@ -393,32 +415,29 @@ const [temp,setTemp] = useState({
            }}
   
           onBlur={(e)=>{
-            if(temp.Pincode==0){
-            setTemp({Pincode:temp.Pincode+1})
-         }
-         else{
+        //     if(temp.Pincode==0){
+        //     setTemp({Pincode:temp.Pincode+1})
+        //  }
+        //  else{
            const pattern =/^[1-9][0-9]{5}$/;
            setError({ 
             ...isError,
             Pincode:(!pattern.test(user.Pincode))
            }); 
-            }
+            // }
           }}
            
           
         />
 
-        <View>{(isError.Pincode) && <Text style={{fontSize:19,color:"red",paddingBottom:15}}>Pincode is invalid (No space allowed)</Text>}</View>
-
-        
-{/* the below section is for password input box. Here we do not allow numbers or any other special character. We can see the error while when we go to the next text box or when the text is out of focus*/}
-        
+        <View>{(isError.Pincode) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}>Pincode is invalid</Text>}</View>
         
         <View style={{flexDirection:"row",}}>
   
          
-    
-          <TextInput style={[styles.CUS,{width:"80%"}]} secureTextEntry={hidePass ? true : false} placeholder="Password" 
+  {/* the below section is for password input box. Here we do not allow numbers or any other special character. We can see the error while when we go to the next text box or when the text is out of focus*/}
+          
+          <TextInput style={[styles.CUS,{width:"80%",borderTopRightRadius: 8, borderTopLeftRadius: 8,}]} secureTextEntry={hidePass ? true : false} placeholderTextColor="#202020" placeholder="Password" 
               onChangeText={(text)=>{ 
                 setUser({
                   ...user,
@@ -426,24 +445,27 @@ const [temp,setTemp] = useState({
 
               }}
               onBlur={(e)=>{
-                if(temp.Password==0){
-                  setTemp({Password:temp.Password+1})
-                }
-                else{
+                // if(temp.Password==0){
+                //   setTemp({Password:temp.Password+1})
+                // }
+                // else{
                   const pattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
                   
                   setError({ 
                     ...isError,
                   Password:(!pattern.test(user.Password))
                   }); 
-                  }
+                  // }
                 }
               }
           />
           <Icon
-                style={[styles.CUS,{width:"13%",}]}
+                style={[styles.CUS,{width:"15%",borderWidth:0,marginTop:15}]}
                 name={hidePass ? 'eye-slash' : 'eye'}
                 // size={15}
+                borderBottomLeftRadius={0}
+                borderTopLeftRadius={0}
+            
                 color="grey"
                 onPress={() => setHidePass(!hidePass)}
               />  
@@ -451,16 +473,17 @@ const [temp,setTemp] = useState({
 
 
         
+        {/* Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character: */}
         
 
-        <View>{(isError.Password) && <Text style={{fontSize:15,color:"red",paddingBottom:15}}> Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character: *</Text>}</View>
+        <View>{(isError.Password) && <Text style={{fontSize:15, color:"red",paddingBottom:15}}> Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character: *</Text>}</View>
 
         
        
         <View style={{flexDirection:"row",}} >
-          <TouchableOpacity style={styles.SignBtn}   >
-            <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"} }>Cancel</Text>
-          </TouchableOpacity>
+          {/* <TouchableOpacity style={styles.SignBtn}   >
+            <Text style={{fontSize:22,fontWeight:"300",color:"#ffffff"}}>Cancel</Text>
+          </TouchableOpacity> */}
           <TouchableOpacity style={styles.SignBtn} 
             onPress={(e)=>{
               
@@ -472,8 +495,8 @@ const [temp,setTemp] = useState({
 
                       if(Email.includes(user.Email) ||Contact.includes(user.Contact))
                           {
-                            Alert.alert("Error","Your email id or contact is already registerated. Please login",[
-                              { text: "OK", onPress: () => {console.log("OK Pressed"); }}
+                            Alert.alert("Error","Your email id or contact is already registrated. Please login",[
+                              { text: "OK", onPress: () => {console.log("OK Pressed");navigation.navigate('Login') }}
                             ])
                             
                           }
@@ -488,7 +511,7 @@ const [temp,setTemp] = useState({
                      
                       else{
                         firebase.database().ref('cust_details/').push(user);
-                        console.log(Email,Contact)
+                   
                         Alert.alert("Sign Up Sucessful","Please login in to your account",[
                           { text: "OK", onPress: () => {console.log("OK Pressed"); }}
                         ])
@@ -506,44 +529,91 @@ const [temp,setTemp] = useState({
             }}
 
           >
-            <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"}}>Sign UP</Text>
+            <Text style={{fontSize:22,fontWeight:"300",color:"#ffffff"}}>Sign Up</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.SignBtn}>
-            <Text style={{fontSize:22,fontWeight:"bold",color:"#ffffff"}} >Login</Text>
-          </TouchableOpacity>
-        </View>
+          
         
-        <Text>{"\n"} {"\n"} </Text>
+        
+     
+        
         </View>
+        <TouchableOpacity style={{backgroundColor:'#f5fffa',marginTop:10,}} onPress={(e)=>{navigation.navigate('Login')}}>
+            <Text style={{textDecorationLine: 'underline',fontSize:20}}>Already have an account</Text>
+          </TouchableOpacity>
+        </View>
+    </ScrollView>
+  </View>
     );
           
           }
 
 const styles = StyleSheet.create({
-  FormWrapper: {
+  container: {
     flex: 1,
+    backgroundColor:"#008080",
+    // alignItems: 'center',
+    // justifyContent: 'center',
   },
-  normalText:{
-    fontSize:25,
-    paddingBottom:8,
+  HeaderMain: {
+    // flex:1,
+    height:180,
+    borderTopLeftRadius:0,
+    borderTopRightRadius:0,
+    borderBottomLeftRadius:0,
+    borderBottomRightRadius:0,
+    borderLeftColor:"#8844ad",
+
   },
+  HeaderMainText:{
+    paddingTop:"20%",
+    textAlign:'center',
+    textAlignVertical:"center",
+    color:"#ebe6ed",
+    // fontFamily:"Roboto",
+    fontWeight:"bold",
+    fontSize:30,
+    fontFamily: 'Roboto', 
+  },
+
+  FormWrapper: {
+    backgroundColor: '#f5fffa',
+    paddingLeft:20,
+    marginTop: 10,
+    paddingTop:"5%",
+    paddingBottom:"5%",
+    borderTopLeftRadius:40,
+    borderTopRightRadius:40,
+    // borderTopEndRadius:30,
+  },
+  // normalText:{
+  //   fontSize:25,
+  //   paddingBottom:8,
+  // },
   CUS:{
-    fontSize:25,
+    // backgroundColor: "#E0FFFF",
+    fontSize:15,
+    textAlign:'center',
     width:"93%",
-    marginBottom:20,
-    borderBottomWidth:2,
-    borderColor:"#ba60eb",
-   
-    
+    borderWidth: 1.5,
+    padding: 5,
+    marginBottom:10,
+    marginTop:10,
+    borderColor:"#008080",
+    borderBottomLeftRadius:8,
+    borderBottomRightRadius:8,
+    borderTopLeftRadius:8,
+    borderTopRightRadius:8,
+    // color: "#202020"
   },
   SignBtn: {
+    marginTop: 30,
     marginLeft:"1.5%",
-    backgroundColor:"#ba60eb",
-    width:"30%",
+    backgroundColor:"#008080",
+    width:"93%",
+    marginLeft: 0, 
     alignItems:"center",
     justifyContent:'center',
     height:43,
     borderRadius:8,
   }
- 
 });
