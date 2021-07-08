@@ -104,7 +104,7 @@ function Login({navigation}) {
                             if(foundemail==1){
                                 if(foundpass==1){
                                     Alert.alert("Success","Sign up Succesful",[
-                                            { text: "OK", onPress: () =>{ console.log("OK Pressed");navigation.navigate('Dashboard')}}
+                                            { text: "OK", onPress: () =>{ console.log("OK Pressed");navigation.navigate('Adashboard')}}
                                           ])
                                 }
                                 else{

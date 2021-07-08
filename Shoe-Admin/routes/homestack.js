@@ -3,10 +3,14 @@ import {createAppContainer} from 'react-navigation';
 import Adminform from '../components/admin'
 import Login from '../components/Login'
 import VenForm from '../components/vendor'
-import Dashboard from '../components/dashboard';
+import Adashboard from '../components/AdminHome';
 
 
 const screens={
+    Adashboard:{
+        screen:Adashboard,
+        navigationOptions: {headerShown: false}
+    },
     Login:{
         screen:Login,
         navigationOptions: {headerShown: false}
@@ -19,10 +23,7 @@ const screens={
         screen:VenForm,
         navigationOptions: {headerShown: false}
     },
-    Dashboard:{
-        screen:Dashboard,
-        navigationOptions: {headerShown: false}
-    }
+  
     
 }
 

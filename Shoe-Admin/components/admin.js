@@ -185,6 +185,7 @@ return (
         //     setTemp({Email:temp.Email+1});
         //  }
         //  else{
+          user.Email.trim()
            const pattern = /^\w+([.-]?\w+)@\w+([.-]?\w+)(.\w\w+)+$/;
            setError({ 
             ...isError,
