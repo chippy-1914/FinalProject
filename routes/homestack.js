@@ -4,7 +4,7 @@ import Regiform from "../components/Form";
 import Login from "../components/Login";
 import AddProd from "../components/AddProd";
 import Addtocart from "../components/Addtocart";
-import Wishlist from "../components/wishlist";
+// import Wishlist from "../components/wishlist";
 import Cdashboard from "../components/Cdashboard";
 import Vdashboard from "../components/Vdashboard";
 import Details from "../components/producteach";
@@ -53,10 +53,10 @@ const screens = {
     screen: Addtocart,
     navigationOptions: { headerShown: false },
   },
-  Wishlist: {
-    screen: Wishlist,
-    navigationOptions: { headerShown: false },
-  },
+//   Wishlist: {
+//     screen: Wishlist,
+//     navigationOptions: { headerShown: false },
+//   },
   Rating: {
     screen: StarRating,
     navigationOptions: { headerShown: false },
