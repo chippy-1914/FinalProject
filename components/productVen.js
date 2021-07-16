@@ -16,7 +16,7 @@ import { CustomerContext, ProductContext } from "../Context";
 import { Alert } from "react-native";
 TouchableOpacity.defaultProps = { activeOpacity: 0.5 };
 
-export default function Details({ navigation }) {
+export default function ProductVen({ navigation }) {
   const prodContext = useContext(ProductContext);
   const cusContext = useContext(CustomerContext);
   const product = prodContext.data.current;
@@ -199,44 +199,25 @@ export default function Details({ navigation }) {
                     //   .child("cart_details/" + cusContext.data.current_id + "/")
                     //   .set({
                     //     [product[0]]: 1,
-                    if (c == "" && s == "") {
-                      Alert.alert(
-                        "Wrong Input",
-                        "Please give all details properly",
-                        [
-                          {
-                            text: "Ok",
-                            onPress: () => console.log("ok pressed"),
-                          },
-                        ]
-                      );
-                    }
-                    //   });
-                    else {
-                      Alert.alert("Success", "Successfully added to cart.", [
-                        {
-                          text: "OK",
-                          onPress: () => {
-                            firebase
-                              .database()
-                              .ref("cart_details/")
-                              .child(cusContext.data.current_id)
-                              .child(product[0])
-                              .set({
-                                unit: Number(count) + 1,
-                                price: product[1].final_price,
-                                size: s,
-                                color: c,
-                              });
-                          },
+
+                    Alert.alert("Success", "Successfully removed.", [
+                      {
+                        text: "OK",
+                        onPress: () => {
+                          firebase
+                            .database()
+                            .ref()
+                            .child("prod_details")
+                            .child(product[0])
+                            .remove();
                         },
-                      ]);
-                    }
+                      },
+                    ]);
 
                     // navigation.navigate("Addtocart");
                   }}
                 >
-                  <Text style={styles.txt}>Add to cart</Text>
+                  <Text style={styles.txt}>Delete</Text>
                 </TouchableOpacity>
               </View>
               <TouchableOpacity

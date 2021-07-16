@@ -1,5 +1,6 @@
 import React, { useState, useContext } from "react";
 import firebase from "firebase";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -11,6 +12,7 @@ import {
   Alert,
 } from "react-native";
 import { VendorContext, CustomerContext } from "../Context";
+
 function Login({ navigation }) {
   const cusContext = useContext(CustomerContext);
   const venContext = useContext(VendorContext);
@@ -202,18 +204,47 @@ function Login({ navigation }) {
             }}
           />
           {/* <Text>password</Text> */}
-          <TextInput
-            style={[styles.CUS, { marginTop: 20 }]}
-            placeholderTextColor="#202020"
-            placeholder="Password"
-            onChangeText={(text) => {
-              setUserinput({
-                ...userinput,
-                password: text,
-              });
-            }}
-          />
-
+          <View style={{ flexDirection: "row" }}>
+            <TextInput
+              style={[
+                styles.CUS,
+                {
+                  marginTop: 20,
+                  width: "84%",
+                  borderTopRightRadius: 8,
+                  borderTopLeftRadius: 8,
+                },
+              ]}
+              secureTextEntry={hidePass ? true : false}
+              placeholderTextColor="#202020"
+              placeholder="Password"
+              onChangeText={(text) => {
+                setUserinput({
+                  ...userinput,
+                  password: text,
+                });
+              }}
+            />
+            <Icon
+              style={{
+                borderWidth: 0,
+                marginTop: 30,
+                // width: "10%",
+                marginLeft: 15,
+              }}
+              name={hidePass ? "eye-slash" : "eye"}
+              size={15}
+              borderBottomLeftRadius={0}
+              borderTopLeftRadius={0}
+              color="grey"
+              onPress={() => setHidePass(!hidePass)}
+            />
+          </View>
+          {/* <TouchableOpacity>
+            <Text style={{ textDecorationLine: "underline" }}>
+              Forgot Password?
+            </Text>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={styles.SignBtn}
             onPress={(e) => {
@@ -229,8 +260,9 @@ function Login({ navigation }) {
                     },
                   ]);
                 } else {
-                  const count = CdbObj.length;
-                  var foundemail, foundpass, name, id;
+                  const count = VdbObj.length;
+                  var Name, id;
+                  var foundemail, foundpass;
                   for (var i = 1; i < count; i++) {
                     if (
                       VdbObj[i].email == userinput.username ||
@@ -241,7 +273,7 @@ function Login({ navigation }) {
                         // Alert.alert("Success","Sign up Succesfull",[
                         //     { text: "OK", onPress: () =>{ console.log("OK Pressed");navigation.navigate('Dashboard')}}
                         //   ])
-                        name = VdbObj[i].name;
+                        Name = VdbObj[i].name;
                         id = VdbObj[i].user;
                         foundpass = 1;
                         break;
@@ -258,10 +290,9 @@ function Login({ navigation }) {
                             console.log("Success");
                             venContext.dispatch({
                               type: "Change_User",
-                              value: name,
+                              value: Name,
                               id: id,
                             });
-                            // navigation.navigate("Vdashboard");
                             navigation.navigate("Vdashboard");
                           },
                         },
@@ -302,8 +333,8 @@ function Login({ navigation }) {
                   ]);
                 } else {
                   const count = CdbObj.length;
-                  var foundemail, foundpass;
                   var Name, id;
+                  var foundemail, foundpass;
                   for (var i = 1; i < count; i++) {
                     if (
                       CdbObj[i].email == userinput.username ||
@@ -314,9 +345,9 @@ function Login({ navigation }) {
                         // Alert.alert("Success","Sign up Succesfull",[
                         //     { text: "OK", onPress: () =>{ console.log("OK Pressed");navigation.navigate('Dashboard')}}
                         //   ])
+                        foundpass = 1;
                         Name = CdbObj[i].name;
                         id = CdbObj[i].user;
-                        foundpass = 1;
                         break;
                       }
                     }
@@ -334,7 +365,7 @@ function Login({ navigation }) {
                               value: Name,
                               id: id,
                             });
-                            //   navigation.navigate("Adashboard");
+                            navigation.navigate("Adashboard");
                             navigation.navigate("Cdashboard");
                           },
                         },
