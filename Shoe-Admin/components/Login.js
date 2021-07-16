@@ -1,5 +1,6 @@
 import React, { useState, useReducer, useEffect, useContext } from "react";
 import firebase from "firebase";
+import Icon from "react-native-vector-icons/FontAwesome5";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -18,7 +19,7 @@ import { UserContext } from "../Context/Context";
 function Login({ navigation }) {
   const userContext = useContext(UserContext);
   // const [visibility, setVisible] = useState(false);
-
+  const [hidePass, setHidePass] = useState(true);
   function getCredentials() {
     const dbRef = firebase.database().ref();
     const dbtable = dbRef.child("admin_details");
@@ -112,17 +113,42 @@ function Login({ navigation }) {
             }}
           />
           {/* <Text>password</Text> */}
-          <TextInput
-            style={[styles.CUS, { marginTop: 20 }]}
-            placeholderTextColor="#202020"
-            placeholder="Password"
-            onChangeText={(text) => {
-              setUserinput({
-                ...userinput,
-                password: text,
-              });
-            }}
-          />
+   <View style={{ flexDirection: "row" }}>
+            <TextInput
+              style={[
+                styles.CUS,
+                {
+                  marginTop: 20,
+                  width: "84%",
+                  borderTopRightRadius: 8,
+                  borderTopLeftRadius: 8,
+                },
+              ]}
+              secureTextEntry={hidePass ? true : false}
+              placeholderTextColor="#202020"
+              placeholder="Password"
+              onChangeText={(text) => {
+                setUserinput({
+                  ...userinput,
+                  password: text,
+                });
+              }}
+            />
+            <Icon
+              style={{
+                borderWidth: 0,
+                marginTop: 30,
+                // width: "10%",
+                marginLeft: 15,
+              }}
+              name={hidePass ? "eye-slash" : "eye"}
+              size={15}
+              borderBottomLeftRadius={0}
+              borderTopLeftRadius={0}
+              color="grey"
+              onPress={() => setHidePass(!hidePass)}
+            />
+          </View>
           {/* <TouchableOpacity>
             <Text style={{ textDecorationLine: "underline" }}>
               Forgot Password?
