@@ -1,4 +1,5 @@
 import React, { useContext, useState } from "react";
+import StarRating from 'react-native-star-rating';
 import {
   StyleSheet,
   Text,
@@ -10,7 +11,6 @@ import {
   TextInput,
   Animated,
 } from "react-native";
-import StarRating from 'react-native-star-rating';
 import Icon from "react-native-vector-icons/FontAwesome5";
 import { ProductContext, CustomerContext } from "../Context";
 export default function Viewreview({ navigation }) {
@@ -55,19 +55,19 @@ export default function Viewreview({ navigation }) {
               <Text style={{ fontSize: 18, fontWeight: "bold" }}>
                 {cust_name.fName} {cust_name.lName}
               </Text>
-              {<StarRating
+              <StarRating
               visible={true}
               maxStars={5}
               fullStar={"star"}
               fullStarColor={"#FCC400"}
               starSize={22}
-              containerStyle={{ marginLeft: 20 }}
+              // containerStyle={{ marginLeft: 10 }}
               starStyle={{ marginLeft: 5 }}
               rating={review.Rating}
               selectedStar={(rating) => {
                 return rating;
               }}
-            />}
+            /> 
             </View>
           </View>
           <View>
